@@ -1,13 +1,13 @@
 <script>
   import Map from "../components/Map.svelte";
-  import Axios from "axios";
+  import axios from "axios";
 
   let domain;
   let coords = [];
 
   const getCoords = async () => {
-    const { data } = await axios.get(`http://ip-api.com/json/${ip}`);
-    coords.push([data.lat, data.lon]);
+    const { data } = await axios.get(`http://ip-api.com/json/${domain}`);
+    coords.push([data.lon, data.lat]);
     coords = [...coords];
   };
 </script>

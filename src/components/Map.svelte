@@ -3,21 +3,18 @@
   import { Map, NavigationControl, Marker } from "maplibre-gl";
   import "maplibre-gl/dist/maplibre-gl.css";
 
-  export let cooreds = [];
+  export let coords = [];
 
   let map;
+  let markers = [];
   let mapContainer;
 
   onMount(() => {
-    const apiKey = "";
-
-    const initialState = { lng: 139.753, lat: 35.6844, zoom: 14 };
+    const apiKey = "9OzGZPhG82oNtAiyjKgB";
 
     map = new Map({
       container: mapContainer,
       style: `https://api.maptiler.com/maps/streets-v2/style.json?key=${apiKey}`,
-      center: [initialState.lng, initialState.lat],
-      zoom: initialState.zoom,
     });
 
     map.addControl(new NavigationControl({}), "top-right");
@@ -26,15 +23,23 @@
   onDestroy(() => {
     if (map) map.remove();
   });
+
+  $: {
+    if (map && coords) {
+      // Remove old markers
+      markers.forEach((marker) => marker.remove());
+      markers = [];
+
+      // Add new markers
+      coords.forEach((coord) => {
+        const marker = new Marker().setLngLat(coord).addTo(map);
+        markers.push(marker);
+      });
+    }
+  }
 </script>
 
 <div class="map-wrap">
-  <a href="https://www.maptiler.com" class="watermark"
-    ><img
-      src="https://api.maptiler.com/resources/logo.svg"
-      alt="MapTiler logo"
-    /></a
-  >
   <div class="map" id="map" bind:this={mapContainer} />
 </div>
 
@@ -49,12 +54,5 @@
     position: absolute;
     width: 100%;
     height: 100%;
-  }
-
-  .watermark {
-    position: absolute;
-    left: 10px;
-    bottom: 10px;
-    z-index: 999;
   }
 </style>
