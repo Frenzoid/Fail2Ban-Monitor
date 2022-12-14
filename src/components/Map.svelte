@@ -22,36 +22,35 @@
 
   onDestroy(() => {
     if (map) map.remove();
+    if (markers) clearMarkers();
   });
 
-  $: {
-    if (map && coords) {
-      // Remove old markers
-      markers.forEach((marker) => marker.remove());
-      markers = [];
+  function updateMarkers() {
+    clearMarkers();
 
-      // Add new markers
-      coords.forEach((coord) => {
-        const marker = new Marker().setLngLat(coord).addTo(map);
-        markers.push(marker);
-      });
-    }
+    coords.forEach((coord) => {
+      console.log(coord);
+      const marker = new Marker({ color: "#FF0000" })
+        .setLngLat([coord.lon, coord.lat])
+        .addTo(map);
+      markers.push(marker);
+    });
+  }
+
+  function clearMarkers() {
+    markers.forEach((marker) => marker.remove());
+    markers = [];
+  }
+
+  $: {
+    coords, updateMarkers();
   }
 </script>
 
-<div class="map-wrap">
-  <div class="map" id="map" bind:this={mapContainer} />
-</div>
+<div class="map" bind:this={mapContainer} />
 
 <style>
-  .map-wrap {
-    position: relative;
-    width: 100%;
-    height: calc(100vh);
-  }
-
   .map {
-    position: absolute;
     width: 100%;
     height: 100%;
   }
