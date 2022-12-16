@@ -28,10 +28,9 @@
 
       // Reset the error status
       errorStatus = "";
-    } catch (error) {
-      console.error(error);
-      console.error(error.response.data.message);
-      errorStatus = error.response.data.message;
+    } catch ({ response }) {
+      console.error(response);
+      errorStatus = response.data.message;
     }
   });
 
@@ -80,6 +79,7 @@
 
   .map-wrap {
     min-width: 500px;
+    height: calc(100vh - 71px);
     flex: 1;
   }
 

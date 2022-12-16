@@ -5,17 +5,12 @@
   export let flyTo;
 </script>
 
-<div
-  class="py-2 px-4 border-bottom border-secondary"
-  id="address-card"
-  on:click={flyTo({ lat, lon })}
-  on:keydown={flyTo({ lat, lon })}
->
-  <p class="text-primary m-0">
+<div class="py-2 px-4 border-bottom border-secondary" id="address-card">
+  <p class="text-primary mb-2">
     <strong>Address:</strong>
     <span class={banned ? "text-danger" : "text-primary"}>{ip}</span>
   </p>
-  <ul>
+  <ul on:click={flyTo({ lat, lon })} on:keydown={flyTo({ lat, lon })}>
     <li>
       <span class="text-muted">Country: </span>
       {country}
@@ -38,11 +33,8 @@
 </div>
 
 <style>
-  #address-card {
-    cursor: pointer;
-  }
-
   #address-card:hover {
-    background-color: #1a1a1a;
+    background-color: #141414;
+    cursor: pointer;
   }
 </style>
