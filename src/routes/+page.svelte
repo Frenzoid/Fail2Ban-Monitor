@@ -1,73 +1,106 @@
 <script>
+  import { Stretch } from "svelte-loading-spinners";
   import { onMount } from "svelte";
+
   import Map from "../components/Map.svelte";
+  import AddressCard from "../components/AddressCard.svelte";
   import axios from "axios";
 
-  let addresses = [
-    "google.com",
-    "facebook.com",
-    "twitter.com",
-    "storage.frenzoid.dev",
-  ];
+  let flyTo;
 
-  let coords = [];
+  let MAPTILER_APIKEY;
+  let fail2banips;
+  let addresses;
+  let errorStatus = "";
 
   onMount(async () => {
-    const promises = addresses.map(async (address) => {
-      const { data } = await axios.get(`http://ip-api.com/json/${address}`);
-      return { ...data, address };
-    });
+    try {
+      // Get the API key from the server
+      const req_apikey = await axios.get("/api/maptilerapikey");
+      MAPTILER_APIKEY = req_apikey.data.MAPTILER_APIKEY;
 
-    coords = await Promise.all(promises);
-    console.log(coords);
+      // Get the banned addresses from the server
+      const req_bannedips = await axios.get("/api/fail2banips");
+      fail2banips = req_bannedips.data.IPS;
+
+      // Get the geoloc from the banned IPS
+      addresses = await getGeolocFromAddresses();
+
+      // Reset the error status
+      errorStatus = "";
+    } catch (error) {
+      console.error(error);
+      console.error(error.response.data.message);
+      errorStatus = error.response.data.message;
+    }
   });
+
+  async function getGeolocFromAddresses() {
+    const promises = fail2banips.map(async (ip) => {
+      const { data } = await axios.get(`http://ip-api.com/json/${ip}`);
+      return { ...data, ip, banned: true };
+    });
+    return await Promise.all(promises);
+  }
 </script>
 
-<div class="bg-dark text-white">
-  <div class="text-center">
-    <h2 class="m-0 py-2">Fail2Ban Monitor</h2>
+{#if errorStatus}
+  <p class="loading-div text-center mt-5 text-danger">Error: {errorStatus}</p>
+{:else if !addresses}
+  <div class="loading-div mt-5 d-flex flex-row justify-content-center">
+    <Stretch size="60" color="white" unit="px" duration="1s" />
   </div>
-
-  <div class="d-flex flex-row">
-    <div class="map-wrap col-9">
-      <Map {coords} />
-    </div>
-    <div class="d-flex flex-column col-3">
-      <hr class="mt-0" />
-      <h5 class="text-center mt-2">Banned Addresses</h5>
-      <hr />
-
-      {#each coords as coord}
-        <div class="my-1 px-3">
-          <h6 class="text-danger">{coord.address}</h6>
-          <ul>
-            <li>
-              <span class="text-muted">Country: </span>
-              {coord.country}
-            </li>
-            <li>
-              <span class="text-muted">City: </span>
-              {coord.city}, {coord.regionName}
-            </li>
-            <li>
-              <span class="text-muted">ISP: </span>
-              {coord.isp}
-            </li>
-            <li>
-              <span class="text-muted">Lat: </span>
-              {coord.lat},
-              <span class="text-muted">Lon: </span>
-              {coord.lon}
-            </li>
-          </ul>
-        </div>
-      {/each}
-    </div>
+{:else}
+  <div class="map-wrap">
+    <Map {MAPTILER_APIKEY} {addresses} bind:flyTo />
   </div>
-</div>
+  <div class="sidebar d-flex flex-column">
+    {#if addresses.length === 0}
+      <h5 class="text-center mt-4">No banned addresses</h5>
+    {:else}
+      <h6 class="text-center py-3 border-bottom border-secondary">
+        Total addresses banned: <span class="text-danger"
+          >{addresses.length}</span
+        >
+      </h6>
+      <div class="sidebar-list">
+        {#each addresses as address}
+          <AddressCard {address} {flyTo} />
+        {/each}
+      </div>
+    {/if}
+  </div>
+{/if}
 
 <style>
+  .loading-div {
+    height: calc(100vh - 119px);
+    width: 100%;
+  }
+
   .map-wrap {
-    height: 100vh;
+    min-width: 500px;
+    flex: 1;
+  }
+
+  .sidebar {
+    widows: 320px;
+    max-height: calc(100vh - 71px);
+  }
+
+  .sidebar-list {
+    overflow-y: scroll;
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  ::-webkit-scrollbar-track {
+    border-left: 1px grey solid;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: white;
   }
 </style>

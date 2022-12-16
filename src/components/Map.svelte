@@ -1,49 +1,40 @@
 <script>
-  import { onMount, onDestroy } from "svelte";
+  import { onMount } from "svelte";
   import { Map, NavigationControl, Marker } from "maplibre-gl";
   import "maplibre-gl/dist/maplibre-gl.css";
 
-  export let coords = [];
+  export let addresses = [];
+  export let MAPTILER_APIKEY;
 
   let map;
   let markers = [];
   let mapContainer;
 
-  onMount(() => {
-    const apiKey = "9OzGZPhG82oNtAiyjKgB";
-
+  onMount(async () => {
     map = new Map({
       container: mapContainer,
-      style: `https://api.maptiler.com/maps/streets-v2/style.json?key=${apiKey}`,
+      style: `https://api.maptiler.com/maps/streets-v2/style.json?key=${MAPTILER_APIKEY}`,
     });
 
     map.addControl(new NavigationControl({}), "top-right");
+
+    addresses.forEach((address) => {
+      addMaker(address, map);
+    });
   });
 
-  onDestroy(() => {
-    if (map) map.remove();
-    if (markers) clearMarkers();
-  });
-
-  function updateMarkers() {
-    clearMarkers();
-
-    coords.forEach((coord) => {
-      console.log(coord);
-      const marker = new Marker({ color: "#FF0000" })
-        .setLngLat([coord.lon, coord.lat])
-        .addTo(map);
-      markers.push(marker);
+  export function flyTo({ lon, lat }) {
+    map.flyTo({
+      center: [lon, lat],
+      zoom: 9,
     });
   }
 
-  function clearMarkers() {
-    markers.forEach((marker) => marker.remove());
-    markers = [];
-  }
-
-  $: {
-    coords, updateMarkers();
+  function addMaker({ lon, lat }) {
+    const marker = new Marker({ color: "#FF0000" })
+      .setLngLat([lon, lat])
+      .addTo(map);
+    markers.push(marker);
   }
 </script>
 
@@ -51,7 +42,7 @@
 
 <style>
   .map {
-    width: 100%;
-    height: 100%;
+    min-width: 100%;
+    min-height: 100%;
   }
 </style>
