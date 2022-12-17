@@ -1,5 +1,6 @@
 <script>
-  import "../app.scss";
+  import "bootstrap/dist/js/bootstrap.bundle.min.js";
+  import "bootstrap/dist/css/bootstrap.min.css";
 </script>
 
 <div class="bg-dark text-white">
