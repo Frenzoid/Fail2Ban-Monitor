@@ -6,14 +6,8 @@ const config = {
   kit: {
     adapter: adapter({ out: "build" }),
   },
+  preprocess: [preprocess()]
 
-  preprocess: [
-    preprocess({
-      scss: {
-        prependData: '@use "src/variables.scss" as *;',
-      },
-    }),
-  ],
 };
 
 export default config;
