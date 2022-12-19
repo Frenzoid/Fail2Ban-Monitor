@@ -11,7 +11,7 @@ Simple svelteKit app to monitor fail2ban logs and banned addresses.
 - Via Docker (recommended)
 Run the following command to start the app:
 
-  `docker run --name F2BMONITOR_SERVER -p 3000:3000 -e MAPTILER_APIKEY=yourmaptilerapikey -v /path/to/fail2ban/logs:/app/logs frenzoid/fail2ban-monitor:latest`
+  `docker run --name F2BMONITOR_SERVER -p 3000:3000 -e MAPTILER_APIKEY=yourmaptilerapikey -v /var/log/fail2ban.log:/f2b/fail2ban.log frenzoid/fail2ban-monitor:latest`
 
 - Via Node
   - Clone the repo
