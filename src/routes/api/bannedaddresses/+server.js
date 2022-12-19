@@ -14,7 +14,8 @@ export function GET() {
     let ips = [];
 
     // read the log file.
-    const logFile = fs.readFileSync('f2b/fail2ban.log', 'utf8');
+    console.log("Reading fail2ban log file...");
+    const logFile = fs.readFileSync('/f2b/fail2ban.log', 'utf8');
 
     // split the log file by lines
     const lines = logFile.split(os.EOL);
@@ -33,7 +34,7 @@ export function GET() {
 
   } catch (err) {
     const errorMessage = "Failed to read fail2ban log file. Did you mount the fail2ban log file to the container? Do i have the correct read permissions?: " + err;
-    console.error(errorMessage)
+    console.error(errorMessage);
     throw error(400, errorMessage);
   }
 

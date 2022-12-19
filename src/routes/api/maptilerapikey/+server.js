@@ -6,10 +6,11 @@ import { env } from '$env/dynamic/private'
  * @type {import('@sveltejs/kit').RequestHandler}
  */
 export function GET() {
+  console.log("Reading Maptiler API Key from env variable...")
   // Check if the env variable is set, if it isnt, throw an error, and if it is, return the value to the frontend.
   if (!env.MAPTILER_APIKEY) {
     const errorMessage = "Maptiler API Key was not set. Please, set your API KEY as an env variable on this container named 'MAPTILER_APIKEY'. More info at: https://cloud.maptiler.com/account/keys/";
-    console.error(errorMessage)
+    console.error(errorMessage);
     throw error(400, errorMessage);
   }
 

@@ -1,0 +1,12 @@
+version: '3'
+services:
+  f2b-monitor:
+    container_name: f2bm
+    build: .
+    volumes:
+      # Example file, change it with your /var/log/fail2ban.log
+      - ./f2b/fail2ban.log:/f2b/fail2ban.log
+    environment:
+      - MAPTILER_APIKEY=""
+    ports:
+      - 3000:3000
