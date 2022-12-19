@@ -13,13 +13,4 @@ Run the following command to start the app:
 
   `docker run --name F2BMONITOR_SERVER -p 3000:3000 -e MAPTILER_APIKEY=yourmaptilerapikey -v /var/log/fail2ban.log:/f2b/fail2ban.log frenzoid/fail2ban-monitor:latest`
 
-- Via Node
-  - Clone the repo
-  - Install dependencies with `npm install`
-  - Create a `.env` file in the root directory and add the following:
-    - `MAPTILER_APIKEY=yourmaptilerapikey`
-  - Run the app with `npm run build && npm run start`
-  - Open [localhost:3000](http://localhost:3000) to view it in the browser.
-
-
 
